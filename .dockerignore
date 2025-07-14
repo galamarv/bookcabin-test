@@ -1,0 +1,23 @@
+# Git
+.git
+.gitignore
+
+# Docker
+Dockerfile
+docker-compose.yml
+.dockerignore
+
+# Backend
+backend-go/voucher-app
+backend-go/db/vouchers.db
+backend-go/db/vouchers.db-journal
+
+# Frontend
+frontend-react/node_modules
+frontend-react/build
+frontend-react/.env
+frontend-react/npm-debug.log
+
+# IDE
+.idea
+.vscode

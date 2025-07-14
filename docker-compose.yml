@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+  # Backend Go Service
+  backend:
+    build:
+      context: ./backend-go
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    volumes:
+      # Mounts the local db directory into the container.
+      # This ensures that the SQLite database file persists between container restarts.
+      - ./backend-go/db:/app/db
+    restart: unless-stopped
+
+  # Frontend React Service
+  frontend:
+    build:
+      context: ./frontend-react
+      dockerfile: Dockerfile
+    ports:
+      # The React app will be accessible on port 3000 of your host machine
+      - "3000:80"
+    depends_on:
+      - backend # Ensures the backend starts before the frontend
+    restart: unless-stopped
