@@ -52,7 +52,10 @@ func (uc *VoucherUsecase) GenerateVouchers(input model.Voucher) ([]string, error
 	}
 
 	// Business Rule 2: Generate 3 unique seats based on aircraft.
-	seats := generateUniqueSeats(input.AircraftType)
+	seats, err := generateUniqueSeats(input.AircraftType)
+	if err != nil {
+		return nil, fmt.Errorf("usecase: failed to generate seats: %w", err)
+	}
 	input.Seats = seats
 
 	// Business Rule 3: Save the voucher to the repository.
@@ -66,8 +69,10 @@ func (uc *VoucherUsecase) GenerateVouchers(input model.Voucher) ([]string, error
 
 // It generates 3 unique seats based on the aircraft type.
 // It uses randomization to ensure that the seats are unique and suitable for the specified aircraft.
-func generateUniqueSeats(aircraftType string) []string {
-	rand.Seed(time.Now().UnixNano())
+func generateUniqueSeats(aircraftType string) ([]string, error) {
+	// Initialize random seed
+	r := rand.New(rand.NewSource(time.Now().UnixNano()))
+
 	var rows int
 	var seatsPerRow []string
 
@@ -79,24 +84,26 @@ func generateUniqueSeats(aircraftType string) []string {
 		rows = 32
 		seatsPerRow = []string{"A", "B", "C", "D", "E", "F"}
 	default:
-		rows = 32
-		seatsPerRow = []string{"A", "B", "C", "D", "E", "F"}
+		return nil, fmt.Errorf("invalid aircraft type: %s", aircraftType)
 	}
 
-	// Generate all possible seats and shuffle them to ensure randomness.
-	// It creates a slice of all possible seats based on the number of rows and seat letters
-	var allSeats []string
-	for r := 1; r <= rows; r++ {
-		for _, s := range seatsPerRow {
-			allSeats = append(allSeats, fmt.Sprintf("%d%s", r, s))
+	// Use a map to track chosen seats for uniqueness
+	chosenSeats := make(map[string]bool)
+	var result []string
+
+	// Generate 3 unique seats
+	for len(result) < 3 {
+		// Generate a random row and seat letter
+		randomRow := r.Intn(rows) + 1 // +1 because rows are 1-based
+		randomSeatIndex := r.Intn(len(seatsPerRow))
+		seat := fmt.Sprintf("%d%s", randomRow, seatsPerRow[randomSeatIndex])
+
+		// Check for uniqueness
+		if !chosenSeats[seat] {
+			chosenSeats[seat] = true
+			result = append(result, seat)
 		}
 	}
 
-	// Shuffle the seats to ensure randomness.
-	// It uses the rand package to shuffle the slice of all seats.
-	rand.Shuffle(len(allSeats), func(i, j int) {
-		allSeats[i], allSeats[j] = allSeats[j], allSeats[i]
-	})
-
-	return allSeats[:3]
+	return result, nil
 }
