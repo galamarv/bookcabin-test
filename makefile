@@ -36,25 +36,36 @@ build-frontend:
 
 # --- General Commands ---
 
-## run: Runs both backend and frontend servers concurrently (requires two terminals).
+## run: Runs both backend and frontend servers.
+# Note: This command requires two separate terminals to run the backend and frontend servers concurrently.	
 run:
 	@echo "This command requires two separate terminals."
 	@echo "In one terminal, run: make run-backend"
 	@echo "In another terminal, run: make run-frontend"
 
-## build: Builds both the backend and frontend for production.
+## build: Builds both backend and frontend applications for production.
 build: build-backend build-frontend
 
-## clean: Removes generated files (binary and build artifacts).
+##  clean: Cleans up build artifacts and generated files.
 clean:
 	@echo "Cleaning up build artifacts..."
 	@rm -f $(BINARY_NAME)
 	@rm -rf frontend-react/build
 	@echo "Cleanup complete."
 
-## help: Shows this help message.
-help:
-	@echo "Available commands:"
-	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}'
+## help: Displays this help message.
+help:	
+	@echo "Makefile Commands:"
+	@echo "  make run-backend       - Start the Go backend server"
+	@echo "  make build-backend     - Build the Go backend application"
+	@echo "  make setup-frontend    - Install npm dependencies for the frontend"
+	@echo "  make run-frontend      - Start the React frontend server"
+	@echo "  make build-frontend    - Build the React frontend for production"
+	@echo "  make run               - Run both backend and frontend servers (requires two terminals)"
+	@echo "  make build             - Build both backend and frontend for production"
+	@echo "  make clean             - Remove generated files and build artifacts"
+	@echo "  make help              - Display this help message"
 
+# --- Phony Targets ---
+# These targets are not actual files, but commands to be executed.
 .PHONY: run-backend build-backend setup-frontend run-frontend build-frontend run build clean help
