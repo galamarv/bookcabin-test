@@ -9,6 +9,18 @@ import './App.css';
  * It handles form submission, input changes, and displays results or errors.
  */
 function App() {
+  // Helper function to get today's date in YYYY-MM-DD format
+  // formData holds the input values for crew name, ID, flight number, date,
+  // This format is required for the min attribute of the date input
+  // and aircraft type. It initializes with default values.
+  const getTodayString = () => {
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, '0'); // Months are 0-indexed
+    const day = String(today.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
+
   // State to manage form data for crew and flight details.
   // formData holds the input values for crew name, ID, flight number, date,
   // and aircraft type. It initializes with default values.
@@ -28,6 +40,8 @@ function App() {
   // handleInputChange updates the formData state when the user types in the input fields.
   const handleInputChange = (e) => {
     const { name, value } = e.target;
+    setError('');
+    setAssignedSeats([]);
     setFormData({ ...formData, [name]: value });
   };
 
@@ -94,19 +108,27 @@ function App() {
       <form onSubmit={handleSubmit}>
         <div className="form-group">
           <label htmlFor="name">Crew Name</label>
-          <input type="text" id="name" name="name" value={formData.name} onChange={handleInputChange} />
+          <input type="text" id="name" name="name" value={formData.name} onChange={handleInputChange} required />
         </div>
         <div className="form-group">
           <label htmlFor="id">Crew ID</label>
-          <input type="text" id="id" name="id" value={formData.id} onChange={handleInputChange} />
+          <input type="text" id="id" name="id" value={formData.id} onChange={handleInputChange} required />
         </div>
         <div className="form-group">
           <label htmlFor="flightNumber">Flight Number</label>
-          <input type="text" id="flightNumber" name="flightNumber" value={formData.flightNumber} onChange={handleInputChange} />
+          <input type="text" id="flightNumber" name="flightNumber" value={formData.flightNumber} onChange={handleInputChange} required />
         </div>
         <div className="form-group">
           <label htmlFor="date">Flight Date</label>
-          <input type="date" id="date" name="date" value={formData.date} onChange={handleInputChange} />
+           <input
+            type="date"
+            id="date"
+            name="date"
+            value={formData.date}
+            onChange={handleInputChange}
+            min={getTodayString()} 
+            required
+          />
         </div>
         <div className="form-group">
           <label htmlFor="aircraft">Aircraft Type</label>
